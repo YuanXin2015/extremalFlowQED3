@@ -1,0 +1,197 @@
+
+\documentclass[11pt]{article}
+\usepackage{setspace,graphicx,amssymb,amsmath,latexsym,amsfonts,amscd,amsthm,multirow,ctable,mathdots,caption,array,diagbox,mathtools}
+\usepackage{color}
+%\usepackage{graphicx}
+%\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\newcommand{\es}[2] {\begin{equation} \label{#1} \begin{split} #2 \end{split} \end{equation}}
+\newcommand{\ess}[1] {\begin{equation*} \begin{split} #1 \end{split} \end{equation*}}
+\newcommand{\bes}[2]{\begin{equation} \label{#1} \boxed{\begin{split} #2 \end{split}} \end{equation}}
+\newcommand{\db}[1]{\frac{d^{3}#1}{(2\pi)^{3}}}
+\newcommand{\dbf}[1]{\frac{d^{4}#1}{(2\pi)^{4}}}
+\newcommand{\dbd}[1]{\frac{d^{d}#1}{(2\pi)^{d}}}
+\newcommand{\om}[1]{\omega_{\vec{#1}}}
+\newcommand{\ord}[1]{\mathcal{O}\left(#1\right)}
+\newcommand{\di}[1]{\frac{d^{3}#1}{(2\pi)^{3}2\om{#1}}}
+\newcommand{\vev}[1]{\langle 0 | #1 | 0\rangle}
+\newcommand{\tvev}[1]{\langle\Omega | T\{#1\} | \Omega\rangle}
+\newcommand{\prop}[1]{\frac{-i}{#1^{2}+m^{2}-i\epsilon}}
+\newcommand{\propm}[2]{\frac{-i}{#1^{2}+#2-i\epsilon}}
+\newcommand{\pprop}[1]{G_{F}^{0}(#1)}
+\newcommand{\dispexp}[2]{\begin{array}{c} \\ #1\\ \\ #2\\ \ \end{array}}
+\newcommand{\mat}[2]{\left(\begin{array}{#1} #2 \end{array}\right)}
+\newcommand{\tr}{\mathrm{Tr}}
+\newcommand{\id}{\mathbf{1}}
+\newcommand{\nn}{\nonumber}
+
+\newcommand{\red}{\color{red}}
+\newcommand{\blue}{\color{blue}}
+
+\newcommand{\kmax}{k_{\rm max}}
+
+%%% yuan definitions %%%
+\def\X{\mathcal{X}}
+\newcommand{\rep}[4]{ \rho \left(
+    \begin{array}{cc}
+      #1 & #2\\
+      #3 & #4
+    \end{array}
+  \right)}
+
+
+\renewcommand{\t}{\tau}
+\renewcommand{\l}{\lambda}
+\renewcommand{\r}{\rho}
+\newcommand{\s}{\sigma}
+\renewcommand{\b}{\beta}
+\newcommand{\n}{\nu}
+\newcommand{\m}{\mu}
+\newcommand{\w}{\omega}
+% \renewcommand{\p}{\pi}
+
+\newcommand{\CO}{\mathcal{O}}
+
+\newcommand{\D}{\Delta}
+
+\renewcommand{\(}{\left(}
+\renewcommand{\)}{\right)}
+\renewcommand{\[}{\left[}
+\renewcommand{\]}{\right]}
+\newcommand{\<}{\left\langle}
+\renewcommand{\>}{\right\rangle}
+\newcommand{\abs}[1]{\left| #1 \right|}
+
+\newcommand{\colvec}[1]{
+    \left(
+    \begin{array}{c}
+        #1
+    \end{array}
+    \right)
+}
+
+
+%\title{}
+%\author{}
+%\date{}                                           % Activate to display a given date or no date
+
+%\usepackage{putex}
+
+\begin{document}
+%\preprint{}
+%\institution{}{}
+\title{Summary}
+\author{}
+\date{}
+\maketitle
+
+\tableofcontents
+
+\pagebreak
+
+\section{Nonlinear interior point method}
+
+% In the spinless case, life is easy because the primal-dual extremal solution is sparse. We can search for either a primal solution, i.e. a spectrum that satisfies the truncated crossing equations, or a dual solution, i.e. an extremal functional that has maximizes the gap, and the results always agree. 
+% Once we move on to the spin case, the correspondence between the primal and dual solutions become tricky. There are flat directions near the extremal solution, so one can find primal spectra continuously connected to the extremal spectrum, and linear functionals with shifted zeros. 
+% It is probably not sufficient to search for a primal or dual solution alone 
+% This means in additional to finding a primal or dual solution we also need to optimize the gap over continuous family of solutions. 
+% It turns out that optimizing one problem 
+% The primal and dual problems are bound together in that optimizing one solution implies solution to the other problem. So the best strategy may be to work on both problem simultaneously. 
+
+The condition of extremal solution to crossing is is known as the KKT conditions\footnote{See \href{https://en.wikipedia.org/wiki/Karush\%E2\%80\%93Kuhn\%E2\%80\%93Tucker_conditions}{\bf Wikipedia ``Karush–Kuhn–Tucker conditions''}}, which is a set of first derivative conditions of a nonlinear problem. The condition is discussed in the ``go with the flow'' paper 1605.08087 eq (3.12). In addition to the ``crossing'', ``saturation'' and ``tangency'', we would like to add additional requirements to force all OPE coefficients squared be positive and that all operators' dimensions satisfy the unitarity bound. Since we have positivity constraints, a nonlinear interior point method\footnote{See \href{https://en.wikipedia.org/wiki/Interior-point_method}{\bf Wikipedia ``Interior-point method''}} is suitable for our problem. Our method will be similar to the internal algorithm of SDPB's, but nonlinear. 
+
+We begin from the simple case of one single correlator $\< \phi\phi\phi\phi \>$ and the external operator $\phi$ itself does not show up in the OPE. The notation is the following:
+\begin{itemize}
+\item We use $x^\mu \equiv \Delta_{\CO_{(\mu)}}$ to label the dimension of the $\mu$-th internal operator $\CO_{(\mu)}$. And we can further distinguish operators coming from each channel by mapping
+$\mu \leftrightarrow (\ell,r,\cdots,\tilde  \mu)$ for quantum numbers such as the spin $\ell$ and global symmetry reps $r$, and the order of the operator in the channel $\tilde \mu$.
+\item We use $a^\mu \equiv \lambda^2_{\phi\phi\CO_{(\mu)}}$ to label the OPE coefficients squared.
+\item We use $\xi^\sigma \equiv \Delta_{\phi_{(\sigma)}}$ to label the dimension of the $\sigma$-th external operator $\phi_{(\sigma)}$. Because in this simple case we only have one external operator $\phi$, the vector $\xi^\sigma$ has only one element.
+\end{itemize}
+The crossing equation is 
+\begin{equation}
+b_i + \sum_\mu a^\mu f_i ( x^\mu ) = 0
+\end{equation}
+where $f_i$ is the $i$-th crossing function and $b_i \equiv f_i({\rm Id})$ is the identity operator's contribution to the crossing equation. Both $f$ and $b$ depend explicitly on $\xi^\sigma$. In addition to crossing, we have some one-sided constraints from unitarity and physical assumptions:
+\begin{itemize}
+\item The OPE coefficients are real, so $a^\mu \geq 0$.
+\item The dimensions $x^\mu, \xi^\sigma$ are bounded by unitarity, and physical assumptions. In the current code we add that all operators' dimensions are bounded on below by the adjacent operator. We summarize these constraints as
+\begin{equation}
+\begin{aligned}
+x^{\mu \leftrightarrow (\ell,r,\tilde \mu)} &\geq \tilde x^\mu \equiv  
+\begin{cases}
+x^{(\ell,r,\bar \mu-1)} & \tilde \mu > 1 \\
+\Delta_{\rm gap}^{(\ell,r)} & \tilde \mu = 1
+\end{cases}
+\\
+\xi^\sigma &\geq \bar \xi^\sigma \equiv \Delta_{\rm gap}^{(\sigma)}
+\end{aligned}
+\end{equation}
+where $\Delta_{\rm gap}$ can be the unitarity gap or assumption.
+\end{itemize}
+
+
+
+We state the problem and algorithm as the following (note that unless explicitly written, the repeated indices are not summed): 
+\begin{equation}
+\label{eq:primal-dual-nonlinear}
+\arraycolsep=1pt\def\arraystretch{1.4}
+\begin{array}{lllr}
+\text{\bf Primal}~~ & \text{minimize}\quad& g\big(\{x^\mu\}, \{\xi^\sigma\}\big), & \\
+& \text{subjet to} & \forall i,~ F_i = b_i + \sum_\mu a^\mu f_i(x^\mu) = 0 & (a)  \\
+& & a^\mu \geq 0 & \\
+& & x^\mu \geq \bar x^\mu, & \\
+& & \xi^\sigma \geq \bar \xi^\sigma, & \\
+% & \text{where} & b_i = f_i(vac). & \\
+\text{\bf Dual}~~ & \text{maximize}\quad & \sum_i b_i y^i, & \\
+& \text{subjet to} & \forall \mu,~ y^i A_{i\mu} + z_\mu = 0 & (b) \\
+& & \forall \mu,~y^i B_{i\mu} + \tilde w_\mu = c_\mu, & (c) \\
+& & \forall \sigma,~y^i \Xi_{i\sigma} + \eta_\sigma = c_\sigma, & (d) \\
+& \text{where} & A_{i\mu} \equiv - \frac{\partial F_i}{\partial a^\mu} = -f_i(x^\mu) & \\
+& & B_{i\mu} \equiv - \frac{\partial F_i}{\partial x^\mu} = -a_\mu f_i'(x^\mu) & \\
+& & \Xi_{i\sigma} \equiv - \frac{\partial F_i}{\partial \xi^\sigma} = -  \frac{\partial b_i}{\partial \xi^\sigma} - \sum_\mu a_\mu \frac{\partial f_i(x^\mu)}{\partial \xi^\sigma} & \\
+& & c_{\mu} \equiv - \frac{\partial g}{\partial x^\mu}. & \\
+& & c_{\sigma} \equiv - \frac{\partial g}{\partial \xi^\sigma}. & \\
+& & \tilde w_\mu \equiv \frac{\partial }{\partial x^\mu}\left(
+\sum_\nu (x^\nu - \bar x^\nu) w_\nu
+\right). & \\
+\multicolumn{4}{l}{\text{\bf Complementarity}} \\
+ & \text{as }M\rightarrow 0, \quad~ & \forall \mu,~ a^\mu z_\mu = M & (e) \\
+& & \forall \mu,~ (x^\mu - \bar x^\mu) w_\mu = M . & (f) \\
+& & \forall \sigma,~ (\xi^\sigma - \bar \xi^\sigma) \eta_\sigma = M . & (g)
+\end{array}
+\end{equation}
+
+Condition $(a)$ is simply the condition of finding a spectrum that satisfies crossing. Condition $(b)$ says that the linear functional is greater or equal to zero at each $x^\mu$, in particular,
+\begin{itemize}
+\item If an operator $x^\mu$ is contained in the extremal spectrum, i.e. $a^\mu > 0$, then $z_\mu \rightarrow 0$ as $M \rightarrow 0$, and the linear functional has a zero at $x^\mu$.
+\item If an operator $x^\mu$ is not contained in the extremal spectrum, i.e. $a^\mu = 0$, then $z_\mu > 0$ meaning the linear functional is strictly positive at $x^\mu$.
+\end{itemize}
+Condition $(c)$ is more interesting. Assuming $a^\mu > 0$, 
+\begin{itemize}
+\item For most operators, their dimensions are irrelevant to the object ($c_\mu = 0$), and are gapped away from the unitary bound or nearby operators, $x^\mu \geq \bar x^\mu > 0$, which means $w_\mu \rightarrow 0$ as $M\rightarrow 0$. Condition $(c)$ sets the first derivative of the linear functional be zero, and the linear functional has a second order zero at $x^\mu$. 
+\item If a bound is saturated, i.e. $x^\mu - \bar x^\mu = 0$, then $w_\mu > 0$ The linear functional has a first order zero at $x^\mu$, and the first derivative is set by $w_\mu$.
+\item For operators that saturates the extremal gap, $c_\mu \geq 0$, the linear functional has a first order zero at $x^\mu$ and the first derivative is set by $c_\mu$.
+\end{itemize}
+Condition $(d)$ is similar to $(c)$ but for the external dimensions $\xi^\sigma$.
+Conditions $(e,f,g)$ is a feature that comes from interior point method and allows one-sided constraints. The variables $z_\mu, w_\mu, \eta_\sigma$ are Lagrangian multipliers of these constraints. The ``complementarity slackiness'' $M$ controls how close those one-sided constraints are to saturation. 
+% Without the positivity constraints we would have to make sure that every operator corresponds to a zero of the extremal spectrum and that the operator that saturates the bounds and objectives completely match the input, otherwise our solution would be wrong. Also, the extremality conditions in the ``go with the flow'' paper does not include the one-sided constraints, and the consequence is that the continuous flow hits singularities when OPE coefficients become negative or the saturation point shifts to a different operator. Ideally, our $M$ should soften these singularities.
+
+To solve equations $(a$--$g)$, we use Newton's method with a moving target. We start from a sizable $M$ and let it decay, and at each step update the variables $(a^\mu, z_\mu, x^\mu, w_\mu, \xi^\sigma, \eta^\sigma y^i)$ to solve the linearized equations $(a,b,c,d,e,f,g)$. We cut the step length $(\delta a^\mu, \delta z_\mu, \delta x^\mu, \delta w_\mu, \delta \xi^\sigma, \delta\eta^\sigma, \delta y^i)$ to ensure the update does not exceed the one-sided constraints. At the end of each step, we compute the update of $M$
+\begin{equation}
+M = \beta \times \frac{1}{n_z + n_w + n_\eta}\sum_\mu (a^\mu z_\mu + (x^\mu - \bar x^\mu)w_\mu  + (\xi^\sigma - \bar \xi^\sigma)\eta_\sigma )
+\end{equation}
+where $n_z$ and $n_w$ are the number of $z_\mu$ and $w_\mu$ variables, respectively, and $\beta$ is the decay factor. SDPB uses $\beta = 0.3$.
+
+
+    
+    
+\end{document}
+    
+    
+    
+    %%% Local Variables:
+    %%% mode: latex
+    %%% TeX-master: t
+    %%% End:
